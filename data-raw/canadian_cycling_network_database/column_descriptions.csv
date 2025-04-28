@@ -1,0 +1,15 @@
+name,type,description
+provinceterritory,string,The province or territory where the municipality is located
+municipality,string,The name of the municipality
+sourcedataid,string,Unique identifier for the data source
+recordid,string,Unique identifier for each record in the dataset
+sourceclass,string,Original infrastructure classification from the data source
+sourceclasssecondary,string,Additional classification details from the source
+canbicsclass,string,Harmonized infrastructure classification based on CANBICS
+surfacetype,string,The surface type of the bikeway eg paved unpaved
+widthm,float,Width of the bikeway in meters
+lengthkm,float,Length of the bikeway segment in kilometers
+csdname,string,Name of the census subdivision where the segment is located
+cmaname,string,Name of the census metropolitan area
+csdpopulation2021,integer,Population of the census subdivision as of 2021
+geometry,geometry,Geospatial representation of the bikeway segment
