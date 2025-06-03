@@ -1,0 +1,70 @@
+---
+title: "Setup"
+output: html_notebook
+---
+
+This notebook will have the code for loading data in.
+
+```{r load packages}
+library(readr)
+library(sf)
+library(ggplot2)
+library(igraph) # contains tidynetworks
+library(dplyr)
+library(here)
+#library(axialmaps) # look into whether this one would be helpful
+```
+
+```{r read csv files}
+classification_dictionary <- read_csv("data-raw/canadian_cycling_network_database/classification_dictionary.csv")
+column_descriptions <- read_csv("data-raw/canadian_cycling_network_database/column_descriptions.csv")
+data_sources <- read_csv("data-raw/canadian_cycling_network_database/data_sources.csv")
+municipality_infra_summary <- read_csv("data-raw/canadian_cycling_network_database/municipality_infra_summary.csv")
+# View(classification_dictionary)
+```
+
+```{r read cycling network gpkg}
+cycle_network <- st_read("data-raw/canadian_cycling_network_database/cycle_network_2024.gpkg")
+```
+
+```{r make cycling network valid (sf)}
+cycle_network <- cycle_network |>
+  st_make_valid()
+```
+
+```{r save files}
+save(classification_dictionary, 
+     file = glue::glue(here::here(),
+                       "/data-raw/classification_dictionary.rda"),
+     compress = "bzip2")
+
+save(column_descriptions, 
+     file = glue::glue(here::here(),
+                       "/data-raw/column_descriptions.rda"),
+     compress = "bzip2")
+
+save(data_sources, 
+     file = glue::glue(here::here(),
+                       "/data-raw/data_sources.rda"),
+     compress = "bzip2")
+
+save(municipality_infra_summary, 
+     file = glue::glue(here::here(),
+                       "/data-raw/municipality_infra_summary.rda"),
+     compress = "bzip2")
+```
+
+
+```{r check if network works}
+# if a map generates, it means the cycle_network set works after using st_make_valid()
+ggplot(cycle_network) +
+  geom_sf(geom = cycle_network$geom)
+```
+
+```{r parametrizing test}
+network <- cycle_network |>
+  filter(municipality == "Toronto")
+
+ggplot(network) +
+  geom_sf(geom = network$geom)
+```
