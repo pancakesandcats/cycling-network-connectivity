@@ -60,28 +60,55 @@ unique(network$source_class)
 # used to just compare what source classes exist for the given city versus the whole dataset
 ```
 
+```{r set up network}
+network <- network |>
+  st_union() |>
+  st_make_valid() |>
+  st_buffer(dist = 30) |> # still trying to determine what buffer distance to use
+  st_cast("MULTILINESTRING") |>
+  st_line_merge() |>
+  st_as_sf()
+```
+
 ```{r converts all network lines into strings}
 network_lines <- network |>
   st_cast("LINESTRING", do_split = TRUE)
+# normally do_split is set to TRUE
 ```
 
 ```{r convert network lines into an sf network}
 network_lines <- as_sfnetwork(network_lines, directed = FALSE)
+# normally directed is set to FALSE
+```
+
+```{r, eval=FALSE}
+network_lines <- edge.curved=FALSE
+# edge.curved normally set to FAlSE
+# determine if needed later
 ```
 
 ```{r obtain components from network lines}
 components <- components(network_lines)
 # https://igraph.org/r/html/1.3.5/components.html
-```
-
-```{r check component distribution}
-component_distribution(network_lines, cumulative = TRUE)
-# not sure about whether to keep cumulative true or false
+# setting to "strong" or "weak" results in the same number of components
 ```
 
 ```{r check number of components}
 components$no
+# changes based on the buffer distance
 ```
+
+```{r check component distribution}
+component_distribution <- component_distribution(network_lines, cumulative = TRUE)
+component_distribution
+# not sure about whether to keep cumulative true or false
+# does not work after setting a buffer distance for network
+```
+
+```{r plot component distribution}
+plot(component_distribution)
+```
+
 
 ```{r assign IDs to components}
 network_lines <- network_lines |>
@@ -114,4 +141,6 @@ ggplot() +
 # all colours on https://ggplot2.tidyverse.org/reference/scale_viridis.html
 # changing the size value does not appear to change anything
 # make sure to add "guide = "none"" or it generates a list of each component's colour that will block the entire map
+# can change "data = edges" to "data = nodes" to show the node central points themselves
+# https://ggplot2.tidyverse.org/reference/ggtheme.html
 ```
